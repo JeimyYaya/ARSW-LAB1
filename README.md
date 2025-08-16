@@ -3,6 +3,7 @@
 ### Arquitecturas de Software - ARSW
 ## Ejercicio Introducción al paralelismo - Hilos - Caso BlackListSearch
 
+-Jeimy Alejandra Yaya Martinez
 
 ### Dependencias:
 ####   Lecturas:
@@ -23,6 +24,9 @@
 	![alt text](image.png)
 
 	4. Cambie el incio con 'start()' por 'run()'. Cómo cambia la salida?, por qué?.
+	![alt text](image-1.png)
+	- Al utilizar __start()__ se ejecutan todos los hilos al mismo tiempo, por lo tanto los tres hilos se ejecutan de manera __concurrente__, por esta raron los números salen en desorden. Cuando se usa __run()__ solo se esta llamando a un metodo como cualquier otro, no se esta usando __multithreading__, entonces se ejecuta completamente el primero hilo, luego el segundo y finalmente el tercero.
+
 
 **Parte II - Ejercicio Black List Search**
 
