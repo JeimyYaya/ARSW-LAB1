@@ -17,16 +17,16 @@
 **Parte I - Introducción a Hilos en Java**
 
 1. De acuerdo con lo revisado en las lecturas, complete las clases CountThread, para que las mismas definan el ciclo de vida de un hilo que imprima por pantalla los números entre A y B.   
-![alt text](image-2.png)
+![](img/image-2.png)
 2. Complete el método __main__ de la clase CountMainThreads para que:
 	1. Cree 3 hilos de tipo CountThread, asignándole al primero el intervalo [0..99], al segundo [99..199], y al tercero [200..299].
 	2. Inicie los tres hilos con 'start()'.
-	![alt text](image-3.png)
+	![](img/image-3.png)
 	3. Ejecute y revise la salida por pantalla. 
-	![alt text](image.png)
+	![alt text](img/image.png)
 
 	4. Cambie el incio con 'start()' por 'run()'. Cómo cambia la salida?, por qué?.
-	![alt text](image-1.png)
+	![alt text](img/image-1.png)
 	- Al utilizar __start()__ se ejecutan todos los hilos al mismo tiempo, por lo tanto los tres hilos se ejecutan de manera __concurrente__, por esta razón los números salen en desorden. Cuando se usa __run()__ solo se esta llamando a un metodo como cualquier otro, no se esta usando __multithreading__, entonces se ejecuta completamente el primero hilo, luego el segundo y finalmente el tercero.
 
 
@@ -78,25 +78,25 @@ Podría modificarse la implementación agregando una condición de parada global
 A partir de lo anterior, implemente la siguiente secuencia de experimentos para realizar las validación de direcciones IP dispersas (por ejemplo 202.24.34.55), tomando los tiempos de ejecución de los mismos (asegúrese de hacerlos en la misma máquina):
 
 1. Un solo hilo.
-![alt text](image-4.png)
-![alt text](image-5.png)
+![alt text](img/image-4.png)
+![alt text](img/image-5.png)
 2. Tantos hilos como núcleos de procesamiento (haga que el programa determine esto haciendo uso del [API Runtime](https://docs.oracle.com/javase/7/docs/api/java/lang/Runtime.html)).
-![alt text](image-6.png)
-![alt text](image-8.png)
+![alt text](img/image-6.png)
+![alt text](img/image-8.png)
 3. Tantos hilos como el doble de núcleos de procesamiento.
-![alt text](image-9.png)
-![alt text](image-7.png)
+![](img/image-9.png)
+![](img/image-7.png)
 4. 50 hilos.
-![alt text](image-10.png)
-![alt text](image-11.png)
+![](img/image-10.png)
+![](img/image-11.png)
 5. 100 hilos.   
-![alt text](image-12.png)
+![](img/image-12.png)
 
 Al iniciar el programa ejecute el monitor jVisualVM, y a medida que corran las pruebas, revise y anote el consumo de CPU y de memoria en cada caso.   
-![alt text](image-13.png)
+![](img/image-13.png)
 
 Con lo anterior, y con los tiempos de ejecución dados, haga una gráfica de tiempo de solución vs. número de hilos. Analice y plantee hipótesis con su compañero para las siguientes preguntas (puede tener en cuenta lo reportado por jVisualVM):   
-![alt text](image-14.png)
+![](img/image-14.png)
 
 **Parte IV - Ejercicio Black List Search**
 
@@ -115,7 +115,7 @@ _En comparación, con 200 hilos se obtiene un mejor equilibrio, el trabajo paral
 _Al comparar el número de hilos igual al de núcleos con el doble de hilos, se observó que el tiempo de ejecución disminuyó más de la mitad. Esto puede deberse a que con más hilos se logró esconder latencias (por ejemplo accesos a memoria o esperas de sincronización), permitiendo mayor uso efectivo de los núcleos._
 
 _Sin embargo, en esta configuración el uso de CPU promedio bajó (ya que el tiempo total de ejecución fue menor), mientras que el uso de memoria aumentó (porque cada hilo extra consume stack y estructuras internas). En general, usar el doble de hilos puede mejorar el wall-time, pero trae más consumo de recursos y overhead._
-![alt text](image-15.png)
+![alt text](img/image-15.png)
 
 3. De acuerdo con lo anterior, si para este problema en lugar de 100 hilos en una sola CPU se pudiera usar 1 hilo en cada una de 100 máquinas hipotéticas, la ley de Amdahls se aplicaría mejor?. Si en lugar de esto se usaran c hilos en 100/c máquinas distribuidas (siendo c es el número de núcleos de dichas máquinas), se mejoraría?. Explique su respuesta.
 
