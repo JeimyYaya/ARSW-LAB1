@@ -87,16 +87,14 @@ A partir de lo anterior, implemente la siguiente secuencia de experimentos para 
 4. 50 hilos.
 ![alt text](image-10.png)
 ![alt text](image-11.png)
-5. 100 hilos.
+5. 100 hilos.   
 ![alt text](image-12.png)
 
-Al iniciar el programa ejecute el monitor jVisualVM, y a medida que corran las pruebas, revise y anote el consumo de CPU y de memoria en cada caso. 
+Al iniciar el programa ejecute el monitor jVisualVM, y a medida que corran las pruebas, revise y anote el consumo de CPU y de memoria en cada caso.   
 ![alt text](image-13.png)
 
 Con lo anterior, y con los tiempos de ejecución dados, haga una gráfica de tiempo de solución vs. número de hilos. Analice y plantee hipótesis con su compañero para las siguientes preguntas (puede tener en cuenta lo reportado por jVisualVM):
-![
-	
-](image-14.png)
+![alt text](image-14.png)
 
 **Parte IV - Ejercicio Black List Search**
 
@@ -104,11 +102,28 @@ Con lo anterior, y con los tiempos de ejecución dados, haga una gráfica de tie
 
 	![](img/ahmdahls.png), donde _S(n)_ es el mejoramiento teórico del desempeño, _P_ la fracción paralelizable del algoritmo, y _n_ el número de hilos, a mayor _n_, mayor debería ser dicha mejora. Por qué el mejor desempeño no se logra con los 500 hilos?, cómo se compara este desempeño cuando se usan 200?. 
 
-	- Porque el desempeño tambien depende 
+#### Respuesta:
+	- Según la Ley de Amdahl, el desempeño no crece de forma infinita con el número de hilos, porque siempre existe una fracción del programa que es serial (no puede paralelizarse). Al usar mas hilos, el [overhead](https://www.semanticscholar.org/topic/Overhead-(computing)/4163) de crear y gestionar hilos se vuelve mayor que el beneficio de dividir la parte paralela, generando incluso más tiempo perdido en coordinación que en cómputo.
+
+	En comparación, con 200 hilos se obtiene un mejor equilibrio, el trabajo paralelo está suficientemente dividido para acelerar la ejecución, pero sin el exceso de overhead que aparece con 500. Por eso, 200 hilos alcanzan mejor desempeño práctico que 500.
 
 2. Cómo se comporta la solución usando tantos hilos de procesamiento como núcleos comparado con el resultado de usar el doble de éste?.
 
+#### Respuesta:
+	Al comparar el número de hilos igual al de núcleos con el doble de hilos, se observó que el tiempo de ejecución disminuyó más de la mitad. Esto puede deberse a que con más hilos se logró esconder latencias (por ejemplo accesos a memoria o esperas de sincronización), permitiendo mayor uso efectivo de los núcleos.
+
+	Sin embargo, en esta configuración el uso de CPU promedio bajó (ya que el tiempo total de ejecución fue menor), mientras que el uso de memoria aumentó (porque cada hilo extra consume stack y estructuras internas). En general, usar el doble de hilos puede mejorar el wall-time, pero trae más consumo de recursos y overhead.
+![alt text](image-15.png)
+
 3. De acuerdo con lo anterior, si para este problema en lugar de 100 hilos en una sola CPU se pudiera usar 1 hilo en cada una de 100 máquinas hipotéticas, la ley de Amdahls se aplicaría mejor?. Si en lugar de esto se usaran c hilos en 100/c máquinas distribuidas (siendo c es el número de núcleos de dichas máquinas), se mejoraría?. Explique su respuesta.
+
+### Respuesta
+	Si en lugar de correr 100 hilos en una sola CPU se ejecuta 1 hilo en cada una de 100 máquinas, el paralelismo real sería mucho mayor, ya que se aprovecha hardware independiente en lugar de compartir los mismos recursos. Esto haría que la fracción paralela P de Amdahl se aproveche mejor en la práctica.
+
+	Sin embargo, Amdahl sigue aplicando: la parte serial del programa y la coordinación de resultados siguen siendo el límite. Además, aparecen nuevos costes como latencia de red, comunicación y sincronización entre máquinas, que reducen el speedup real.
+
+	Si en lugar de eso se usan c hilos en 100/c máquinas (aprovechando los núcleos de cada una), el rendimiento sería mejor todavía: cada máquina usa su paralelismo interno de forma eficiente y la carga se distribuye entre varias. Esta opción es más equilibrada que concentrar todo en una sola CPU, aunque nunca se obtendrá un escalado perfectamente lineal por los costes de comunicación y la fracción secuencial del algoritmo.
+	
 
 
 
