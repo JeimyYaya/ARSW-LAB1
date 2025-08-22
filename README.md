@@ -3,7 +3,7 @@
 ### Arquitecturas de Software - ARSW
 ## Ejercicio Introducción al paralelismo - Hilos - Caso BlackListSearch
 
--Jeimy Alejandra Yaya Martinez
+- Jeimy Alejandra Yaya Martinez
 
 ### Dependencias:
 ####   Lecturas:
@@ -13,19 +13,21 @@
 ### Descripción
   Este ejercicio contiene una introducción a la programación con hilos en Java, además de la aplicación a un caso concreto.
   
-
+## Solución del laboratorio
 **Parte I - Introducción a Hilos en Java**
 
 1. De acuerdo con lo revisado en las lecturas, complete las clases CountThread, para que las mismas definan el ciclo de vida de un hilo que imprima por pantalla los números entre A y B.
+![alt text](image-2.png)
 2. Complete el método __main__ de la clase CountMainThreads para que:
 	1. Cree 3 hilos de tipo CountThread, asignándole al primero el intervalo [0..99], al segundo [99..199], y al tercero [200..299].
 	2. Inicie los tres hilos con 'start()'.
+	![alt text](image-3.png)
 	3. Ejecute y revise la salida por pantalla. 
 	![alt text](image.png)
 
 	4. Cambie el incio con 'start()' por 'run()'. Cómo cambia la salida?, por qué?.
 	![alt text](image-1.png)
-	- Al utilizar __start()__ se ejecutan todos los hilos al mismo tiempo, por lo tanto los tres hilos se ejecutan de manera __concurrente__, por esta raron los números salen en desorden. Cuando se usa __run()__ solo se esta llamando a un metodo como cualquier otro, no se esta usando __multithreading__, entonces se ejecuta completamente el primero hilo, luego el segundo y finalmente el tercero.
+	- Al utilizar __start()__ se ejecutan todos los hilos al mismo tiempo, por lo tanto los tres hilos se ejecutan de manera __concurrente__, por esta razón los números salen en desorden. Cuando se usa __run()__ solo se esta llamando a un metodo como cualquier otro, no se esta usando __multithreading__, entonces se ejecuta completamente el primero hilo, luego el segundo y finalmente el tercero.
 
 
 **Parte II - Ejercicio Black List Search**
@@ -67,25 +69,42 @@ Para 'refactorizar' este código, y hacer que explote la capacidad multi-núcleo
 
 La estrategia de paralelismo antes implementada es ineficiente en ciertos casos, pues la búsqueda se sigue realizando aún cuando los N hilos (en su conjunto) ya hayan encontrado el número mínimo de ocurrencias requeridas para reportar al servidor como malicioso. Cómo se podría modificar la implementación para minimizar el número de consultas en estos casos?, qué elemento nuevo traería esto al problema?
 
+
+
 **Parte III - Evaluación de Desempeño**
 
 A partir de lo anterior, implemente la siguiente secuencia de experimentos para realizar las validación de direcciones IP dispersas (por ejemplo 202.24.34.55), tomando los tiempos de ejecución de los mismos (asegúrese de hacerlos en la misma máquina):
 
 1. Un solo hilo.
+![alt text](image-4.png)
+![alt text](image-5.png)
 2. Tantos hilos como núcleos de procesamiento (haga que el programa determine esto haciendo uso del [API Runtime](https://docs.oracle.com/javase/7/docs/api/java/lang/Runtime.html)).
+![alt text](image-6.png)
+![alt text](image-8.png)
 3. Tantos hilos como el doble de núcleos de procesamiento.
+![alt text](image-9.png)
+![alt text](image-7.png)
 4. 50 hilos.
+![alt text](image-10.png)
+![alt text](image-11.png)
 5. 100 hilos.
+![alt text](image-12.png)
 
-Al iniciar el programa ejecute el monitor jVisualVM, y a medida que corran las pruebas, revise y anote el consumo de CPU y de memoria en cada caso. ![](img/jvisualvm.png)
+Al iniciar el programa ejecute el monitor jVisualVM, y a medida que corran las pruebas, revise y anote el consumo de CPU y de memoria en cada caso. 
+![alt text](image-13.png)
 
 Con lo anterior, y con los tiempos de ejecución dados, haga una gráfica de tiempo de solución vs. número de hilos. Analice y plantee hipótesis con su compañero para las siguientes preguntas (puede tener en cuenta lo reportado por jVisualVM):
+![
+	
+](image-14.png)
 
 **Parte IV - Ejercicio Black List Search**
 
 1. Según la [ley de Amdahls](https://www.pugetsystems.com/labs/articles/Estimating-CPU-Performance-using-Amdahls-Law-619/#WhatisAmdahlsLaw?):
 
 	![](img/ahmdahls.png), donde _S(n)_ es el mejoramiento teórico del desempeño, _P_ la fracción paralelizable del algoritmo, y _n_ el número de hilos, a mayor _n_, mayor debería ser dicha mejora. Por qué el mejor desempeño no se logra con los 500 hilos?, cómo se compara este desempeño cuando se usan 200?. 
+
+	- Porque el desempeño tambien depende 
 
 2. Cómo se comporta la solución usando tantos hilos de procesamiento como núcleos comparado con el resultado de usar el doble de éste?.
 

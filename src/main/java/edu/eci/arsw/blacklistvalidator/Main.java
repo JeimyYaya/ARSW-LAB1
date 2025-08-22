@@ -14,10 +14,19 @@ import java.util.List;
 public class Main {
     
     public static void main(String a[]){
+        int cores = Runtime.getRuntime().availableProcessors();
+        System.out.println("Available cores: " + cores);
+
+        long start = System.currentTimeMillis();
+
         HostBlackListsValidator hblv=new HostBlackListsValidator();
-        List<Integer> blackListOcurrences=hblv.checkHost("200.24.34.55");
+        List<Integer> blackListOcurrences=hblv.checkHost("202.24.34.55",1);
+
         System.out.println("The host was found in the following blacklists:"+blackListOcurrences);
-        
+
+        long end = System.currentTimeMillis();
+        System.out.println("Execution time: " + (end - start) + " ms");
+
     }
     
 }
