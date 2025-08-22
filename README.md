@@ -264,7 +264,7 @@ _En comparación, con 200 hilos se obtiene un mejor equilibrio, el trabajo paral
 #### Respuesta:
 _Al comparar el número de hilos igual al de núcleos con el doble de hilos, se observó que el tiempo de ejecución disminuyó más de la mitad. Esto puede deberse a que con más hilos se logró esconder latencias (por ejemplo accesos a memoria o esperas de sincronización), permitiendo mayor uso efectivo de los núcleos._
 
-_Sin embargo, en esta configuración el uso de CPU promedio bajó (ya que el tiempo total de ejecución fue menor), mientras que el uso de memoria aumentó (porque cada hilo extra consume stack y estructuras internas). En general, usar el doble de hilos puede mejorar el wall-time, pero trae más consumo de recursos y overhead._
+_Sin embargo, en esta configuración el uso de CPU promedio bajó (ya que el tiempo total de ejecución fue menor), mientras que el uso de memoria aumentó (porque cada hilo extra consume stack y estructuras internas). En general, usar el doble de hilos puede mejorar el wall-time, pero trae más consumo de recursos y overhead._   
 ![alt text](img/image-15.png)
 
 3. De acuerdo con lo anterior, si para este problema en lugar de 100 hilos en una sola CPU se pudiera usar 1 hilo en cada una de 100 máquinas hipotéticas, la ley de Amdahls se aplicaría mejor?. Si en lugar de esto se usaran c hilos en 100/c máquinas distribuidas (siendo c es el número de núcleos de dichas máquinas), se mejoraría?. Explique su respuesta.
