@@ -17,11 +17,42 @@
 **Parte I - Introducción a Hilos en Java**
 
 1. De acuerdo con lo revisado en las lecturas, complete las clases CountThread, para que las mismas definan el ciclo de vida de un hilo que imprima por pantalla los números entre A y B.   
-![](img/image-2.png)
+´´´
+public class CountThread implements Runnable{
+    private int A;
+    private int B;
+
+    public CountThread(int A, int B){
+        this.A = A;
+        this.B = B;
+
+    }
+
+    public void run(){
+        for (int i = A; i <= B; i++){
+            System.out.print(i + ", ");
+        }
+    }
+}
+
 2. Complete el método __main__ de la clase CountMainThreads para que:
 	1. Cree 3 hilos de tipo CountThread, asignándole al primero el intervalo [0..99], al segundo [99..199], y al tercero [200..299].
 	2. Inicie los tres hilos con 'start()'.
-	![](img/image-3.png)
+	´´´
+	public class CountThreadsMain {
+		
+		public static void main(String a[]){
+			Thread thread1 = new Thread(new CountThread(0,99));
+			Thread thread2 = new Thread(new CountThread(99,199));
+			Thread thread3 = new Thread(new CountThread(200, 299));
+
+			thread1.start();
+			thread2.start();
+			thread3.start();
+		}
+		
+	}
+	´´´
 	3. Ejecute y revise la salida por pantalla. 
 	![alt text](img/image.png)
 
@@ -57,6 +88,46 @@ Al programa de prueba provisto (Main), le toma sólo algunos segundos análizar 
 Para 'refactorizar' este código, y hacer que explote la capacidad multi-núcleo de la CPU del equipo, realice lo siguiente:
 
 1. Cree una clase de tipo Thread que represente el ciclo de vida de un hilo que haga la búsqueda de un segmento del conjunto de servidores disponibles. Agregue a dicha clase un método que permita 'preguntarle' a las instancias del mismo (los hilos) cuantas ocurrencias de servidores maliciosos ha encontrado o encontró.
+´´´
+public class HostBlackListTask implements Runnable{
+    private final HostBlacklistsDataSourceFacade skds;
+    private final String ipaddress;
+    private final int startIndex;
+    private final int endIndex;
+
+    private int ocurrencesCount = 0;
+    private int checkedListCount = 0;
+    private final List<Integer> blacklistOcurrences = new LinkedList<>();
+
+    public HostBlackListTask(HostBlacklistsDataSourceFacade skds, String ipaddress, int startIndex, int endIndex) {
+        this.skds = skds;
+        this.ipaddress = ipaddress;
+        this.startIndex = startIndex;
+        this.endIndex = endIndex;
+    }
+    public void run() {
+        for (int i = startIndex; i < endIndex; i++) {
+            if (skds.isInBlackListServer(i, ipaddress)) {
+                ocurrencesCount++;
+                blacklistOcurrences.add(i);
+            }
+            checkedListCount++;
+        }
+    }
+
+    public int getOcurrencesCount() {
+        return ocurrencesCount;
+    }
+
+    public int getCheckedListCount() {
+        return checkedListCount;
+    }
+
+    public List<Integer> getBlacklistOcurrences() {
+        return blacklistOcurrences;
+    }
+}
+´´´
 
 2. Agregue al método 'checkHost' un parámetro entero N, correspondiente al número de hilos entre los que se va a realizar la búsqueda (recuerde tener en cuenta si N es par o impar!). Modifique el código de este método para que divida el espacio de búsqueda entre las N partes indicadas, y paralelice la búsqueda a través de N hilos. Haga que dicha función espere hasta que los N hilos terminen de resolver su respectivo sub-problema, agregue las ocurrencias encontradas por cada hilo a la lista que retorna el método, y entonces calcule (sumando el total de ocurrencuas encontradas por cada hilo) si el número de ocurrencias es mayor o igual a _BLACK_LIST_ALARM_COUNT_. Si se da este caso, al final se DEBE reportar el host como confiable o no confiable, y mostrar el listado con los números de las listas negras respectivas. Para lograr este comportamiento de 'espera' revise el método [join](https://docs.oracle.com/javase/tutorial/essential/concurrency/join.html) del API de concurrencia de Java. Tenga también en cuenta:
 
@@ -64,13 +135,91 @@ Para 'refactorizar' este código, y hacer que explote la capacidad multi-núcleo
 
 	* Se sabe que el HOST 202.24.34.55 está reportado en listas negras de una forma más dispersa, y que el host 212.24.24.55 NO está en ninguna lista negra.
 
+	´´´
+	public class HostBlackListsValidator {
+
+    private static final int BLACK_LIST_ALARM_COUNT=5;
+    
+    /**
+     * Check the given host's IP address in all the available black lists,
+     * and report it as NOT Trustworthy when such IP was reported in at least
+     * BLACK_LIST_ALARM_COUNT lists, or as Trustworthy in any other case.
+     * The search is not exhaustive: When the number of occurrences is equal to
+     * BLACK_LIST_ALARM_COUNT, the search is finished, the host reported as
+     * NOT Trustworthy, and the list of the five blacklists returned.
+     * @param ipaddress suspicious host's IP address.
+     * @return  Blacklists numbers where the given host's IP address was found.
+     */
+    public List<Integer> checkHost(String ipaddress, int n){
+        
+        LinkedList<Integer> blackListOcurrences=new LinkedList<>();
+        HostBlacklistsDataSourceFacade skds=HostBlacklistsDataSourceFacade.getInstance();
+
+        int totalServers = skds.getRegisteredServersCount();
+        int patitionSize = totalServers / n;
+        int remainder = totalServers % n;
+
+        List<HostBlackListTask> tasks = new LinkedList<>();
+        List<Thread> threads = new LinkedList<>();
+                
+        int start = 0;
+        for (int i = 0; i < n; i++){
+            int end = start + patitionSize;
+            if (i == n-1){
+                end += remainder;
+            }
+                
+            HostBlackListTask task = new HostBlackListTask(skds, ipaddress, start, end);
+            Thread thread = new Thread(task);
+
+            tasks.add(task);
+            threads.add(thread);
+            thread.start();
+            start = end;
+        }
+
+        for(Thread t : threads){
+            try {
+                t.join();
+            }catch (InterruptedException e) {
+                Logger.getLogger(HostBlackListsValidator.class.getName()).log(Level.SEVERE, null, e);
+            }
+        }
+
+        int totalOcurrences = 0;
+        int totalCheckedLists = 0;
+
+        for(HostBlackListTask task : tasks){
+            totalOcurrences += task.getOcurrencesCount();
+            totalCheckedLists += task.getCheckedListCount();
+            blackListOcurrences.addAll(task.getBlacklistOcurrences());
+        }
+
+        if (totalOcurrences>=BLACK_LIST_ALARM_COUNT){
+            skds.reportAsNotTrustworthy(ipaddress);
+        }
+        else{
+            skds.reportAsTrustworthy(ipaddress);
+        }                
+        
+        LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{totalCheckedLists, skds.getRegisteredServersCount()});
+        
+        return blackListOcurrences;
+    }
+    
+    
+    private static final Logger LOG = Logger.getLogger(HostBlackListsValidator.class.getName());
+    
+}
+´´´
+
 
 **Parte II.I Para discutir la próxima clase (NO para implementar aún)**
 
 La estrategia de paralelismo antes implementada es ineficiente en ciertos casos, pues la búsqueda se sigue realizando aún cuando los N hilos (en su conjunto) ya hayan encontrado el número mínimo de ocurrencias requeridas para reportar al servidor como malicioso. Cómo se podría modificar la implementación para minimizar el número de consultas en estos casos?, qué elemento nuevo traería esto al problema?
 
-#### Rspuesta:
-Podría modificarse la implementación agregando una condición de parada global que se active cuando ya se cumpla el número mínimo de ocurrencias. Así los demás hilos se detienen y no realizan consultas innecesarias. Esto introduce la necesidad de sincronización entre hilos, porque ahora deben coordinarse para saber cuándo detenerse.
+#### Respuesta:
+_Podría modificarse la implementación agregando una condición de parada global que se active cuando ya se cumpla el número mínimo de ocurrencias. Así los demás hilos se detienen y no realizan consultas innecesarias. Esto introduce la necesidad de sincronización entre hilos, porque ahora deben coordinarse para saber cuándo detenerse._
 
 
 **Parte III - Evaluación de Desempeño**
