@@ -34,7 +34,7 @@ public class CountThread implements Runnable{
         }
     }
 }
-
+´´´
 2. Complete el método __main__ de la clase CountMainThreads para que:
 	1. Cree 3 hilos de tipo CountThread, asignándole al primero el intervalo [0..99], al segundo [99..199], y al tercero [200..299].
 	2. Inicie los tres hilos con 'start()'.
@@ -53,6 +53,7 @@ public class CountThread implements Runnable{
 		
 	}
 	´´´
+
 	3. Ejecute y revise la salida por pantalla. 
 	![alt text](img/image.png)
 
